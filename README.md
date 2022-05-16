@@ -42,15 +42,27 @@ We have downloaded a diamonds dataset from [Kaggle](https://www.kaggle.com/datas
 
 #### 1. Load the Data Using Pandas
 
+Practice once again with loading CSV data into a `pandas` dataframe.
+
 #### 2. Build a Baseline Simple Linear Regression Model
+
+Identify the feature that is most correlated with `price` and build a StatsModels linear regression model using just that feature.
 
 #### 3. Evaluate and Interpret Baseline Model Results
 
+Explain the overall performance as well as parameter coefficients for the baseline simple linear regression model.
+
 #### 4. Prepare a Categorical Feature for Multiple Regression Modeling
+
+Identify a promising categorical feature and use `pd.get_dummies()` to prepare it for modeling.
 
 #### 5. Build a Multiple Linear Regression Model
 
+Using the data from Step 4, create a second StatsModels linear regression model using one numeric feature and one one-hot encoded categorical feature.
+
 #### 6. Evaluate and Interpret Multiple Linear Regression Model Results
+
+Explain the performance of the new model in comparison with the baseline, and interpret the new parameter coefficients.
 
 ## 1. Load the Data Using Pandas
 
@@ -61,6 +73,7 @@ Be sure to specify `index_col=0` to avoid creating an "Unnamed: 0" column.
 
 ```python
 # Your code here
+
 ```
 
 The following code checks that you loaded the data correctly:
@@ -108,6 +121,7 @@ The target variable is `price`. Look at the correlation coefficients for all of 
 
 ```python
 # Your code here - look at correlations
+
 ```
 
 Identify the name of the predictor column with the strongest correlation below.
@@ -217,7 +231,139 @@ Overall this model is statistically significant and explains about 85% of the va
 
 </details>    
 
+## 4. Prepare a Categorical Feature for Multiple Regression Modeling
+
+Now let's go beyond our simple linear regression and add a categorical feature.
+
+### Identifying a Promising Predictor
+
+Below we create bar graphs for the categories present in each categorical feature:
+
 
 ```python
+# Run this code without changes
+import matplotlib.pyplot as plt
+
+categorical_features = diamonds.select_dtypes("object").columns
+fig, axes = plt.subplots(ncols=len(categorical_features), figsize=(12,5))
+
+for index, feature in enumerate(categorical_features):
+    diamonds.groupby(feature).mean().plot.bar(
+        y="price", ax=axes[index])
+```
+
+Identify the name of the categorical predictor column you want to use in your model below. The choice here is more open-ended than choosing the numeric predictor above -- choose something that will be interpretable in a final model, and where the different categories seem to have an impact on the price.
+
+
+```python
+# Replace None with appropriate code
+cat_col = None
+```
+
+The following code checks that you specified a column correctly:
+
+
+```python
+# Run this cell without changes
+
+# cat_col should be a string
+assert type(cat_col) == str
+
+# cat_col should be one of the categorical columns
+assert cat_col in diamonds.select_dtypes("object").columns
+```
+
+### Setting Up Variables for Regression
+
+The code below creates a variable `X_iterated`: a DataFrame containing the column with the strongest correlation **and** your selected categorical feature.
+
+
+```python
+# Run this cell without changes
+X_iterated = diamonds[[most_correlated, cat_col]]
+X_iterated
+```
+
+### Preprocessing Categorical Variable
+
+If we tried to pass `X_iterated` as-is into `sm.OLS`, we would get an error. We need to use `pd.get_dummies` to create dummy variables for `cat_col`.
+
+**DO NOT** use `drop_first=True`, so that you can intentionally set a meaningful reference category instead.
+
+
+```python
+# Replace None with appropriate code
+
+# Use pd.get_dummies to one-hot encode the categorical column in X_iterated
+X_iterated = None
+X_iterated
+```
+
+The following code checks that you have the right number of columns:
+
+
+```python
+# Run this cell without changes
+
+# X_iterated should be a dataframe
+assert type(X_iterated) == pd.DataFrame
+
+# You should have the number of unique values in one of the
+# categorical columns + 1 (representing the numeric predictor)
+valid_col_nums = diamonds.select_dtypes("object").nunique() + 1
+
+# Check that there are the correct number of columns
+# (if this crashes, make sure you did not use `drop_first=True`)
+assert X_iterated.shape[1] in valid_col_nums.values
+```
+
+Now, applying your domain understanding, **choose a column to drop and drop it**. This category should make sense as a "baseline" or "reference".
+
+
+```python
+# Your code here
 
 ```
+
+Now you should have 1 fewer column than before:
+
+
+```python
+# Run this cell without changes
+
+# Check that there are the correct number of columns
+assert X_iterated.shape[1] in (valid_col_nums - 1).values
+```
+
+## 5. Build a Multiple Linear Regression Model
+
+Using the `y` variable from our previous model and `X_iterated`, build a model called `iterated_model` and a regression results object called `iterated_results`.
+
+
+```python
+# Your code here
+
+```
+
+## 6. Evaluate and Interpret Multiple Linear Regression Model Results
+
+If the model was set up correctly, the following code will print the results summary.
+
+
+```python
+# Run this cell without changes
+print(iterated_results.summary())
+```
+
+Summarize your findings below. How did the iterated model perform overall? How does this compare to the baseline model? What do the coefficients mean?
+
+Create as many additional cells as needed.
+
+
+```python
+# Your written answer here
+```
+
+## Summary
+
+Congratulations, you completed an iterative linear regression process! You practiced developing a baseline and an iterated model, as well as identifying promising predictors from both numeric and categorical features.
