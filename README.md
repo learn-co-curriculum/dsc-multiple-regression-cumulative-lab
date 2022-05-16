@@ -42,15 +42,27 @@ We have downloaded a diamonds dataset from [Kaggle](https://www.kaggle.com/datas
 
 #### 1. Load the Data Using Pandas
 
+Practice once again with loading CSV data into a `pandas` dataframe.
+
 #### 2. Build a Baseline Simple Linear Regression Model
+
+Identify the feature that is most correlated with `price` and build a StatsModels linear regression model using just that feature.
 
 #### 3. Evaluate and Interpret Baseline Model Results
 
+Explain the overall performance as well as parameter coefficients for the baseline simple linear regression model.
+
 #### 4. Prepare a Categorical Feature for Multiple Regression Modeling
+
+Identify a promising categorical feature and use `pd.get_dummies()` to prepare it for modeling.
 
 #### 5. Build a Multiple Linear Regression Model
 
+Using the data from Step 4, create a second StatsModels linear regression model using one numeric feature and one one-hot encoded categorical feature.
+
 #### 6. Evaluate and Interpret Multiple Linear Regression Model Results
+
+Explain the performance of the new model in comparison with the baseline, and interpret the new parameter coefficients.
 
 ## 1. Load the Data Using Pandas
 
@@ -61,6 +73,7 @@ Be sure to specify `index_col=0` to avoid creating an "Unnamed: 0" column.
 
 ```python
 # Your code here
+
 ```
 
 
@@ -475,6 +488,7 @@ The target variable is `price`. Look at the correlation coefficients for all of 
 
 ```python
 # Your code here - look at correlations
+
 ```
 
 
@@ -663,8 +677,8 @@ print(baseline_results.summary())
     Dep. Variable:                  price   R-squared:                       0.849
     Model:                            OLS   Adj. R-squared:                  0.849
     Method:                 Least Squares   F-statistic:                 3.041e+05
-    Date:                Fri, 13 May 2022   Prob (F-statistic):               0.00
-    Time:                        18:55:23   Log-Likelihood:            -4.7273e+05
+    Date:                Mon, 16 May 2022   Prob (F-statistic):               0.00
+    Time:                        17:25:28   Log-Likelihood:            -4.7273e+05
     No. Observations:               53940   AIC:                         9.455e+05
     Df Residuals:                   53938   BIC:                         9.455e+05
     Df Model:                           1                                         
@@ -720,7 +734,757 @@ Overall this model is statistically significant and explains about 85% of the va
 
 </details>    
 
+## 4. Prepare a Categorical Feature for Multiple Regression Modeling
+
+Now let's go beyond our simple linear regression and add a categorical feature.
+
+### Identifying a Promising Predictor
+
+Below we create bar graphs for the categories present in each categorical feature:
+
 
 ```python
+# Run this code without changes
+import matplotlib.pyplot as plt
+
+categorical_features = diamonds.select_dtypes("object").columns
+fig, axes = plt.subplots(ncols=len(categorical_features), figsize=(12,5))
+
+for index, feature in enumerate(categorical_features):
+    diamonds.groupby(feature).mean().plot.bar(
+        y="price", ax=axes[index])
+```
+
+
+```python
+# __SOLUTION__
+import matplotlib.pyplot as plt
+
+categorical_features = diamonds.select_dtypes("object").columns
+fig, axes = plt.subplots(ncols=len(categorical_features), figsize=(12,5))
+
+for index, feature in enumerate(categorical_features):
+    diamonds.groupby(feature).mean().plot.bar(
+        y="price", ax=axes[index])
+```
+
+
+    
+![png](index_files/index_48_0.png)
+    
+
+
+Identify the name of the categorical predictor column you want to use in your model below. The choice here is more open-ended than choosing the numeric predictor above -- choose something that will be interpretable in a final model, and where the different categories seem to have an impact on the price.
+
+
+```python
+# Replace None with appropriate code
+cat_col = None
+```
+
+
+```python
+# __SOLUTION__
+cat_col = "cut"
+```
+
+The following code checks that you specified a column correctly:
+
+
+```python
+# Run this cell without changes
+
+# cat_col should be a string
+assert type(cat_col) == str
+
+# cat_col should be one of the categorical columns
+assert cat_col in diamonds.select_dtypes("object").columns
+```
+
+
+```python
+# __SOLUTION__
+
+# cat_col should be a string
+assert type(cat_col) == str
+
+# cat_col should be one of the categorical columns
+assert cat_col in diamonds.select_dtypes("object").columns
+```
+
+### Setting Up Variables for Regression
+
+The code below creates a variable `X_iterated`: a DataFrame containing the column with the strongest correlation **and** your selected categorical feature.
+
+
+```python
+# Run this cell without changes
+X_iterated = diamonds[[most_correlated, cat_col]]
+X_iterated
+```
+
+
+```python
+# __SOLUTION__
+X_iterated = diamonds[[most_correlated, cat_col]]
+X_iterated
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>carat</th>
+      <th>cut</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>0.23</td>
+      <td>Ideal</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.21</td>
+      <td>Premium</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.23</td>
+      <td>Good</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.29</td>
+      <td>Premium</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.31</td>
+      <td>Good</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>53936</th>
+      <td>0.72</td>
+      <td>Ideal</td>
+    </tr>
+    <tr>
+      <th>53937</th>
+      <td>0.72</td>
+      <td>Good</td>
+    </tr>
+    <tr>
+      <th>53938</th>
+      <td>0.70</td>
+      <td>Very Good</td>
+    </tr>
+    <tr>
+      <th>53939</th>
+      <td>0.86</td>
+      <td>Premium</td>
+    </tr>
+    <tr>
+      <th>53940</th>
+      <td>0.75</td>
+      <td>Ideal</td>
+    </tr>
+  </tbody>
+</table>
+<p>53940 rows × 2 columns</p>
+</div>
+
+
+
+### Preprocessing Categorical Variable
+
+If we tried to pass `X_iterated` as-is into `sm.OLS`, we would get an error. We need to use `pd.get_dummies` to create dummy variables for `cat_col`.
+
+**DO NOT** use `drop_first=True`, so that you can intentionally set a meaningful reference category instead.
+
+
+```python
+# Replace None with appropriate code
+
+# Use pd.get_dummies to one-hot encode the categorical column in X_iterated
+X_iterated = None
+X_iterated
+```
+
+
+```python
+# __SOLUTION__
+
+# Use pd.get_dummies to one-hot encode the categorical column in X_iterated
+X_iterated = pd.get_dummies(X_iterated, columns=[cat_col])
+X_iterated
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>carat</th>
+      <th>cut_Fair</th>
+      <th>cut_Good</th>
+      <th>cut_Ideal</th>
+      <th>cut_Premium</th>
+      <th>cut_Very Good</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>0.23</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.21</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.23</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.29</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.31</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>53936</th>
+      <td>0.72</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>53937</th>
+      <td>0.72</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>53938</th>
+      <td>0.70</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>53939</th>
+      <td>0.86</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>53940</th>
+      <td>0.75</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>53940 rows × 6 columns</p>
+</div>
+
+
+
+The following code checks that you have the right number of columns:
+
+
+```python
+# Run this cell without changes
+
+# X_iterated should be a dataframe
+assert type(X_iterated) == pd.DataFrame
+
+# You should have the number of unique values in one of the
+# categorical columns + 1 (representing the numeric predictor)
+valid_col_nums = diamonds.select_dtypes("object").nunique() + 1
+
+# Check that there are the correct number of columns
+# (if this crashes, make sure you did not use `drop_first=True`)
+assert X_iterated.shape[1] in valid_col_nums.values
+```
+
+
+```python
+# __SOLUTION__
+
+# X_iterated should be a dataframe
+assert type(X_iterated) == pd.DataFrame
+
+# You should have the number of unique values in one of the
+# categorical columns + 1 (representing the numeric predictor)
+valid_col_nums = diamonds.select_dtypes("object").nunique() + 1
+
+# Check that there are the correct number of columns
+# (if this crashes, make sure you did not use `drop_first=True`)
+assert X_iterated.shape[1] in valid_col_nums.values
+```
+
+Now, applying your domain understanding, **choose a column to drop and drop it**. This category should make sense as a "baseline" or "reference".
+
+
+```python
+# Your code here
 
 ```
+
+
+```python
+# __SOLUTION__
+# "Fair" is the worst cut so we'll drop that as the baseline
+X_iterated.drop("cut_Fair", axis=1, inplace=True)
+X_iterated
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>carat</th>
+      <th>cut_Good</th>
+      <th>cut_Ideal</th>
+      <th>cut_Premium</th>
+      <th>cut_Very Good</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>0.23</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.21</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.23</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.29</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.31</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>53936</th>
+      <td>0.72</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>53937</th>
+      <td>0.72</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>53938</th>
+      <td>0.70</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>53939</th>
+      <td>0.86</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>53940</th>
+      <td>0.75</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>53940 rows × 5 columns</p>
+</div>
+
+
+
+Now you should have 1 fewer column than before:
+
+
+```python
+# Run this cell without changes
+
+# Check that there are the correct number of columns
+assert X_iterated.shape[1] in (valid_col_nums - 1).values
+```
+
+
+```python
+# __SOLUTION__
+
+# Check that there are the correct number of columns
+assert X_iterated.shape[1] in (valid_col_nums - 1).values
+```
+
+## 5. Build a Multiple Linear Regression Model
+
+Using the `y` variable from our previous model and `X_iterated`, build a model called `iterated_model` and a regression results object called `iterated_results`.
+
+
+```python
+# Your code here
+
+```
+
+
+```python
+# __SOLUTION__
+iterated_model = sm.OLS(y, sm.add_constant(X_iterated))
+iterated_results = iterated_model.fit()
+```
+
+## 6. Evaluate and Interpret Multiple Linear Regression Model Results
+
+If the model was set up correctly, the following code will print the results summary.
+
+
+```python
+# Run this cell without changes
+print(iterated_results.summary())
+```
+
+
+```python
+# __SOLUTION__
+print(iterated_results.summary())
+```
+
+                                OLS Regression Results                            
+    ==============================================================================
+    Dep. Variable:                  price   R-squared:                       0.856
+    Model:                            OLS   Adj. R-squared:                  0.856
+    Method:                 Least Squares   F-statistic:                 6.437e+04
+    Date:                Mon, 16 May 2022   Prob (F-statistic):               0.00
+    Time:                        17:26:03   Log-Likelihood:            -4.7142e+05
+    No. Observations:               53940   AIC:                         9.429e+05
+    Df Residuals:                   53934   BIC:                         9.429e+05
+    Df Model:                           5                                         
+    Covariance Type:            nonrobust                                         
+    =================================================================================
+                        coef    std err          t      P>|t|      [0.025      0.975]
+    ---------------------------------------------------------------------------------
+    const         -3875.4697     40.408    -95.908      0.000   -3954.670   -3796.269
+    carat          7871.0821     13.980    563.040      0.000    7843.682    7898.482
+    cut_Good       1120.3319     43.499     25.755      0.000    1035.073    1205.591
+    cut_Ideal      1800.9240     39.344     45.773      0.000    1723.809    1878.039
+    cut_Premium    1439.0771     39.865     36.098      0.000    1360.941    1517.214
+    cut_Very Good  1510.1354     40.240     37.528      0.000    1431.265    1589.006
+    ==============================================================================
+    Omnibus:                    14616.138   Durbin-Watson:                   1.027
+    Prob(Omnibus):                  0.000   Jarque-Bera (JB):           150962.278
+    Skew:                           1.007   Prob(JB):                         0.00
+    Kurtosis:                      10.944   Cond. No.                         18.7
+    ==============================================================================
+    
+    Notes:
+    [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+
+Summarize your findings below. How did the iterated model perform overall? How does this compare to the baseline model? What do the coefficients mean?
+
+Create as many additional cells as needed.
+
+
+```python
+# Your written answer here
+```
+
+
+```python
+# __SOLUTION__
+"""
+Writing this solution on the solution branch only because there are multiple
+valid options for the choice of categorical variable.
+
+In our case we chose `cut` because this seemed most straightforward to interpret.
+"""
+```
+
+
+```python
+# __SOLUTION__
+iterated_mae = mean_absolute_error(y, iterated_results.predict(sm.add_constant(X_iterated)))
+baseline_mae, iterated_mae
+```
+
+
+
+
+    (1007.4632473569848, 988.4566099282217)
+
+
+
+
+```python
+# __SOLUTION__
+baseline_results.rsquared_adj, iterated_results.rsquared_adj
+```
+
+
+
+
+    (0.8493277330528323, 0.8564615345684443)
+
+
+
+
+```python
+# __SOLUTION__
+"""
+Overall the model performed marginally better. We were off by about $988 rather
+than $1007 in a given prediction, and explained 85.6% rather than 84.9% of the
+variance in price.
+"""
+```
+
+
+```python
+# __SOLUTION__
+results_df = pd.concat([iterated_results.params, iterated_results.pvalues], axis=1)
+results_df.columns = ["coefficient", "p-value"]
+results_df
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>coefficient</th>
+      <th>p-value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>const</th>
+      <td>-3875.469700</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>carat</th>
+      <td>7871.082134</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>cut_Good</th>
+      <td>1120.331853</td>
+      <td>2.143864e-145</td>
+    </tr>
+    <tr>
+      <th>cut_Ideal</th>
+      <td>1800.923984</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>cut_Premium</th>
+      <td>1439.077141</td>
+      <td>5.613914e-282</td>
+    </tr>
+    <tr>
+      <th>cut_Very Good</th>
+      <td>1510.135409</td>
+      <td>2.728234e-304</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+# __SOLUTION__
+"""
+All of the coefficients are statistically significant
+
+* The intercept is at about -$3.9k. This means that a zero-carat diamond with a
+  `cut` of "Fair" would sell for -$3.9k.
+* The coefficient for `carat` is about $7.9k. This means for each additional carat,
+  the diamond costs about $7.9k more. We note that this is very similar to the
+  `carat` coefficient for the baseline model, meaning that `carat` and `cut` seem
+  to be explaining different aspects of price
+* The coefficients for `cut` range from about $1.1k to about $1.8k
+  * For a cut of "Good" compared to a cut of "Fair", we expect +$1.1k price
+  * For a cut of "Very Good" compared to a cut of "Fair", we expect +$1.5k price
+  * For a cut of "Premium" comparedto a cut of "Fair", we expect +$1.4k price
+  * For a cut of "Ideal" compared to a cut of "Fair", we expect +$1.8k price
+  * This outcome is interesting since our data understanding seems to indicate that
+    "Premium" should be better than "Very Good". More investigation of other features
+    is needed to understand whether this can be explained by other variables, or if
+    "Premium" appears to be undervalued vs. the conventional wisdom
+"""
+```
+
+## Summary
+
+Congratulations, you completed an iterative linear regression process! You practiced developing a baseline and an iterated model, as well as identifying promising predictors from both numeric and categorical features.
