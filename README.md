@@ -411,13 +411,15 @@ for col in categoricals:
     print(diamonds[col].value_counts(), "\n")
 ```
 
+    cut
     Ideal        21551
     Premium      13791
     Very Good    12082
     Good          4906
     Fair          1610
-    Name: cut, dtype: int64 
+    Name: count, dtype: int64 
     
+    color
     G    11292
     E     9797
     F     9542
@@ -425,8 +427,9 @@ for col in categoricals:
     D     6775
     I     5422
     J     2808
-    Name: color, dtype: int64 
+    Name: count, dtype: int64 
     
+    clarity
     SI1     13065
     VS2     12258
     SI2      9194
@@ -435,7 +438,7 @@ for col in categoricals:
     VVS1     3655
     IF       1790
     I1        741
-    Name: clarity, dtype: int64 
+    Name: count, dtype: int64 
     
 
 
@@ -447,7 +450,7 @@ The target variable is `price`. Look at the correlation coefficients for all of 
 
 
 ```python
-diamonds.corr()["price"]
+diamonds.corr(numeric_only=True)["price"]
 ```
 
 
@@ -557,8 +560,8 @@ print(baseline_results.summary())
     Dep. Variable:                  price   R-squared:                       0.849
     Model:                            OLS   Adj. R-squared:                  0.849
     Method:                 Least Squares   F-statistic:                 3.041e+05
-    Date:                Mon, 16 May 2022   Prob (F-statistic):               0.00
-    Time:                        17:25:28   Log-Likelihood:            -4.7273e+05
+    Date:                Mon, 31 Jul 2023   Prob (F-statistic):               0.00
+    Time:                        07:08:11   Log-Likelihood:            -4.7273e+05
     No. Observations:               53940   AIC:                         9.455e+05
     Df Residuals:                   53938   BIC:                         9.455e+05
     Df Model:                           1                                         
@@ -590,7 +593,7 @@ baseline_mae
 
 
 
-    1007.4632473569848
+    1007.4632473569897
 
 
 
@@ -624,7 +627,7 @@ categorical_features = diamonds.select_dtypes("object").columns
 fig, axes = plt.subplots(ncols=len(categorical_features), figsize=(12,5))
 
 for index, feature in enumerate(categorical_features):
-    diamonds.groupby(feature).mean().plot.bar(
+    diamonds.groupby(feature).mean(numeric_only=True).plot.bar(
         y="price", ax=axes[index])
 ```
 
@@ -798,47 +801,47 @@ X_iterated
     <tr>
       <th>1</th>
       <td>0.23</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>2</th>
       <td>0.21</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>3</th>
       <td>0.23</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>4</th>
       <td>0.29</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>5</th>
       <td>0.31</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>...</th>
@@ -852,47 +855,47 @@ X_iterated
     <tr>
       <th>53936</th>
       <td>0.72</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>53937</th>
       <td>0.72</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>53938</th>
       <td>0.70</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
     </tr>
     <tr>
       <th>53939</th>
       <td>0.86</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>53940</th>
       <td>0.75</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
   </tbody>
 </table>
@@ -918,12 +921,14 @@ valid_col_nums = diamonds.select_dtypes("object").nunique() + 1
 assert X_iterated.shape[1] in valid_col_nums.values
 ```
 
-Now, applying your domain understanding, **choose a column to drop and drop it**. This category should make sense as a "baseline" or "reference".
+Now, applying your domain understanding, **choose a column to drop and drop it**. This category should make sense as a "baseline" or "reference". For the "cut_Very Good" column that was generated when `pd.get_dummies` was used, we need to remove the space in the column name.
 
 
 ```python
 # "Fair" is the worst cut so we'll drop that as the baseline
 X_iterated.drop("cut_Fair", axis=1, inplace=True)
+# Remove the space in the Very Good column
+X_iterated.columns = X_iterated.columns.str.replace(' ', '')
 X_iterated
 ```
 
@@ -952,49 +957,49 @@ X_iterated
       <th>cut_Good</th>
       <th>cut_Ideal</th>
       <th>cut_Premium</th>
-      <th>cut_Very Good</th>
+      <th>cut_VeryGood</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>1</th>
       <td>0.23</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>2</th>
       <td>0.21</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>3</th>
       <td>0.23</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>4</th>
       <td>0.29</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>5</th>
       <td>0.31</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>...</th>
@@ -1007,42 +1012,42 @@ X_iterated
     <tr>
       <th>53936</th>
       <td>0.72</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>53937</th>
       <td>0.72</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>53938</th>
       <td>0.70</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
     </tr>
     <tr>
       <th>53939</th>
       <td>0.86</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>53940</th>
       <td>0.75</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
     </tr>
   </tbody>
 </table>
@@ -1050,6 +1055,16 @@ X_iterated
 </div>
 
 
+
+We now need to change the boolean values for the four "cut" column to 1s and 0s in order for the regression to run.
+
+
+```python
+X_iterated.cut_Good = X_iterated.cut_Good.replace({True:1, False:0})
+X_iterated.cut_Ideal = X_iterated.cut_Good.replace({True:1, False:0})
+X_iterated.cut_Premium = X_iterated.cut_Good.replace({True:1, False:0})
+X_iterated.cut_VeryGood = X_iterated.cut_VeryGood.replace({True:1, False:0})
+```
 
 Now you should have 1 fewer column than before:
 
@@ -1081,33 +1096,35 @@ print(iterated_results.summary())
 
                                 OLS Regression Results                            
     ==============================================================================
-    Dep. Variable:                  price   R-squared:                       0.856
-    Model:                            OLS   Adj. R-squared:                  0.856
-    Method:                 Least Squares   F-statistic:                 6.437e+04
-    Date:                Mon, 16 May 2022   Prob (F-statistic):               0.00
-    Time:                        17:26:03   Log-Likelihood:            -4.7142e+05
-    No. Observations:               53940   AIC:                         9.429e+05
-    Df Residuals:                   53934   BIC:                         9.429e+05
-    Df Model:                           5                                         
+    Dep. Variable:                  price   R-squared:                       0.850
+    Model:                            OLS   Adj. R-squared:                  0.850
+    Method:                 Least Squares   F-statistic:                 7.665e+04
+    Date:                Mon, 31 Jul 2023   Prob (F-statistic):               0.00
+    Time:                        07:08:43   Log-Likelihood:            -4.7254e+05
+    No. Observations:               53940   AIC:                         9.451e+05
+    Df Residuals:                   53935   BIC:                         9.451e+05
+    Df Model:                           4                                         
     Covariance Type:            nonrobust                                         
-    =================================================================================
-                        coef    std err          t      P>|t|      [0.025      0.975]
-    ---------------------------------------------------------------------------------
-    const         -3875.4697     40.408    -95.908      0.000   -3954.670   -3796.269
-    carat          7871.0821     13.980    563.040      0.000    7843.682    7898.482
-    cut_Good       1120.3319     43.499     25.755      0.000    1035.073    1205.591
-    cut_Ideal      1800.9240     39.344     45.773      0.000    1723.809    1878.039
-    cut_Premium    1439.0771     39.865     36.098      0.000    1360.941    1517.214
-    cut_Very Good  1510.1354     40.240     37.528      0.000    1431.265    1589.006
+    ================================================================================
+                       coef    std err          t      P>|t|      [0.025      0.975]
+    --------------------------------------------------------------------------------
+    const        -2204.3230     13.779   -159.976      0.000   -2231.330   -2177.316
+    carat         7766.9819     14.035    553.420      0.000    7739.474    7794.490
+    cut_Good     -4.841e+14   6.22e+14     -0.778      0.437    -1.7e+15    7.36e+14
+    cut_Ideal     2.421e+14   3.11e+14      0.778      0.437   -3.68e+14    8.52e+14
+    cut_Premium   2.421e+14   3.11e+14      0.778      0.437   -3.68e+14    8.52e+14
+    cut_VeryGood   -75.3859     16.173     -4.661      0.000    -107.086     -43.686
     ==============================================================================
-    Omnibus:                    14616.138   Durbin-Watson:                   1.027
-    Prob(Omnibus):                  0.000   Jarque-Bera (JB):           150962.278
-    Skew:                           1.007   Prob(JB):                         0.00
-    Kurtosis:                      10.944   Cond. No.                         18.7
+    Omnibus:                    13951.666   Durbin-Watson:                   0.999
+    Prob(Omnibus):                  0.000   Jarque-Bera (JB):           157074.013
+    Skew:                           0.923   Prob(JB):                         0.00
+    Kurtosis:                      11.153   Cond. No.                     8.64e+18
     ==============================================================================
     
     Notes:
     [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+    [2] The smallest eigenvalue is 1.31e-33. This might indicate that there are
+    strong multicollinearity problems or that the design matrix is singular.
 
 
 Summarize your findings below. How did the iterated model perform overall? How does this compare to the baseline model? What do the coefficients mean?
@@ -1133,7 +1150,7 @@ baseline_mae, iterated_mae
 
 
 
-    (1007.4632473569848, 988.4566099282217)
+    (1007.4632473569897, 1000.4366079246525)
 
 
 
@@ -1145,7 +1162,7 @@ baseline_results.rsquared_adj, iterated_results.rsquared_adj
 
 
 
-    (0.8493277330528323, 0.8564615345684443)
+    (0.8493277330528323, 0.85039234895575)
 
 
 
@@ -1193,33 +1210,33 @@ results_df
   <tbody>
     <tr>
       <th>const</th>
-      <td>-3875.469700</td>
-      <td>0.000000e+00</td>
+      <td>-2.204323e+03</td>
+      <td>0.000000</td>
     </tr>
     <tr>
       <th>carat</th>
-      <td>7871.082134</td>
-      <td>0.000000e+00</td>
+      <td>7.766982e+03</td>
+      <td>0.000000</td>
     </tr>
     <tr>
       <th>cut_Good</th>
-      <td>1120.331853</td>
-      <td>2.143864e-145</td>
+      <td>-4.841435e+14</td>
+      <td>0.436693</td>
     </tr>
     <tr>
       <th>cut_Ideal</th>
-      <td>1800.923984</td>
-      <td>0.000000e+00</td>
+      <td>2.420717e+14</td>
+      <td>0.436693</td>
     </tr>
     <tr>
       <th>cut_Premium</th>
-      <td>1439.077141</td>
-      <td>5.613914e-282</td>
+      <td>2.420718e+14</td>
+      <td>0.436693</td>
     </tr>
     <tr>
-      <th>cut_Very Good</th>
-      <td>1510.135409</td>
-      <td>2.728234e-304</td>
+      <th>cut_VeryGood</th>
+      <td>-7.538592e+01</td>
+      <td>0.000003</td>
     </tr>
   </tbody>
 </table>
