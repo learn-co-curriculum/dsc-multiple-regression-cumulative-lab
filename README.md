@@ -317,12 +317,19 @@ valid_col_nums = diamonds.select_dtypes("object").nunique() + 1
 assert X_iterated.shape[1] in valid_col_nums.values
 ```
 
-Now, applying your domain understanding, **choose a column to drop and drop it**. This category should make sense as a "baseline" or "reference".
+Now, applying your domain understanding, **choose a column to drop and drop it**. This category should make sense as a "baseline" or "reference". For the "cut_Very Good" column that was generated when `pd.get_dummies` was used, we need to remove the space in the column name.
 
 
 ```python
 # Your code here
 
+```
+
+We now need to change the boolean values for the four "cut" column to 1s and 0s in order for the regression to run.
+
+
+```python
+# Your code here
 ```
 
 Now you should have 1 fewer column than before:
